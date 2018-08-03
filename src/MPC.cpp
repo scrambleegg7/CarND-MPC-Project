@@ -123,11 +123,32 @@ class FG_eval {
   }
 };
 
+
+template<typename T>
+ostream& operator << (ostream& oss, vector<T>& vec){
+  for(T& x: vec) oss << x << ",";
+  //or you type  ==> for(int i=0; i<vec.size(); i++) oss << x[i];
+  return oss;
+}
+
 //
 // MPC class definition implementation.
 //
 MPC::MPC() {}
-MPC::~MPC() {}
+MPC::~MPC() {ostream_data.close();}
+
+void MPC::setFilename(std::string fname) {
+  // Output filestreams for radar and laser NIS
+  ostream_data.open( fname, ios::out );
+
+}
+
+void MPC::writeData(std::string d, vector<double> data_vals) {
+
+  ostream_data << d << "," << data_vals << std::endl;
+
+}
+
 
 vector<double> MPC::Solve(Eigen::VectorXd x0, Eigen::VectorXd coeffs) {
   bool ok = true;

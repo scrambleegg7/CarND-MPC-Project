@@ -70,6 +70,7 @@ int main() {
 
   // MPC is initialized here!
   MPC mpc;
+  mpc.setFilename("../data/mpc_data.csv");
 
   h.onMessage([&mpc](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length,
                      uWS::OpCode opCode) {
@@ -132,7 +133,8 @@ int main() {
           // Leaves only coeffs[1]
           double epsi = -atan(coeffs[1]);
           
-          // Center of gravity needed related to psi and epsi
+          // Center of gravity needed related to psi and epsi 
+          // copied from mpc const member
           const double Lf = mpc._Lf;
           
           // Latency for predicting time at actuation
@@ -171,11 +173,21 @@ int main() {
           msgJson["throttle"] = throttle_value;
 
           //Display the MPC predicted trajectory 
-          vector<double> mpc_x_vals;
-          vector<double> mpc_y_vals;
+          //vector<double> mpc_x_vals;
+          //vector<double> mpc_y_vals;
+
+          vector<double> mpc_x_vals = {state[0]};
+          vector<double> mpc_y_vals = {state[1]};
 
           //.. add (x,y) points to list here, points are in reference to the vehicle's coordinate system
           // the points in the simulator are connected by a Green line
+          for (unsigned int i = 2; i < vars.size(); i+=2) {
+            mpc_x_vals.push_back(vars[i]);
+            mpc_y_vals.push_back(vars[i+1]);
+          }
+
+          mpc.writeData("mpc_x", mpc_x_vals);
+          mpc.writeData("mpc_y", mpc_y_vals);          
 
           msgJson["mpc_x"] = mpc_x_vals;
           msgJson["mpc_y"] = mpc_y_vals;
