@@ -1,6 +1,29 @@
 # CarND-Controls-MPC
 Self-Driving Car Engineer Nanodegree Program
 
+## MPC 
+
+## 1. What is MPC ?
+MPC stands for Model Predictive Control system which is one of advanced method controlling a series of proccess 
+while satisfying a set of constrains. It has been used in the plan control long time since the 1980s. 
+Thus it might be most popular control for some engineers. Why MPC has be used for autonomous driving technology ?
+Lets say about the car driving at night scene, our human has an ability predicting the road with tiny spot lights 
+brinking at the pedestrian deck in the street. In addition we are able to keep the car in the limited lane space
+to avoid corrision accident with other cars running other sided roads. 
+Its action and feedback is must item for self-driving car which needs autonomous control without any human interactions. 
+Our main focus thema in this course, MPC brings to our forefront solving predicions about fure trajectory based on the 
+control actions.
+
+## 2. Object
+Here the last project of Nano Degree Term2 course, utilizing mordernized technical control MPC mentioned in the above, 
+involves being able to plan optimal actions based on the waypoints of the tack and predict the forward car path
+and finally drive a car on the simualation software adjusting actuators (steering and throttle).
+
+
+
+
+
+
 ---
 
 ## Dependencies
