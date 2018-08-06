@@ -1,6 +1,51 @@
 # CarND-Controls-MPC
 Self-Driving Car Engineer Nanodegree Program
 
+
+
+## MPC 
+
+[//]: # (Image References)
+
+[constrain]:./img/constraint.png "parameter"
+
+
+## 1. What is MPC ?
+MPC stands for Model Predictive Control system which is one of advanced method controlling a series of proccess 
+while satisfying a set of constrains. It has been used in the plan control like chemical industory or Electric insdustory
+long time since the 1980s. 
+Thiugh it might be most popular control for some engineers, why MPC has be used for autonomous driving technology ?
+Lets say about the story of the car driving at night scene (this example would fit to our next project aim), 
+our human has an ability predicting the road with tiny spot lights brinking at the pedestrian deck in the street. 
+In addition we are able to keep the car in the limited lane space
+to avoid corrision accident with other cars running other sided roads. 
+Its action and feedback is must item for self-driving car which needs autonomous control without any human interactions. 
+Our main focus thema in this course, MPC brings to our forefront solving predicions about fure trajectory based on the 
+control actions.
+With recent technology of having advanced capability of the computer, we are able to easily adopt this model for
+complex real-world simulations like car-engineering and aerospace etc. 
+
+## 2. Object
+Here the last project of Nano Degree Term2 course, utilizing mordernized technical control MPC mentioned in the above, 
+involves being able to plan optimal actions based on the waypoints of the tack and predict the forward car path
+and finally drive a car on the simualation software adjusting actuators (steering and throttle).
+Following is mathematical formulation we took account for this project.
+
+![alt text][constrain]
+
+
+
+## 3. Ipopt Library
+Ipopt is GPL software to provide automatical derivatives calculations with C++ source codes. In order to minimize cost function in described above constraints formula, we build cusomized FG_Eval class to solve minimzed cost. This Class method is referred with below link.
+
+Reference link:
+https://www.coin-or.org/CppAD/Doc/ipopt_solve_get_started.cpp.htm
+
+
+
+
+
+
 ---
 
 ## Dependencies
