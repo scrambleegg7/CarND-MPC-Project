@@ -33,16 +33,90 @@ Following is mathematical formulation we took account for this project.
 
 ![alt text][constrain]
 
-
+Hence, 
+* Lf measures the distance between the front of the vehicle and its center of gravity. 
+* f(x) is the evaluation of the polynomial f at point x 
+* psidest is the tangencial angle of the polynomial f evaluated at x.
 
 ## 3. Ipopt Library
 Ipopt is GPL software to provide automatical derivatives calculations with C++ source codes. In order to minimize cost function in described above constraints formula, we build cusomized FG_Eval class to solve minimzed cost. This Class method is referred with below link.
+This calculation Library is able to find optimal values from computation while keeping the constraints set directly to the actuators and the constraints defined by the vehicle model.
 
 Reference link:
 https://www.coin-or.org/CppAD/Doc/ipopt_solve_get_started.cpp.htm
 
+Below is our cost function to be minized.
+
+>  // Cost for CTE, psi error and velocity
+  for (unsigned int t = 0; t < N; t++) {
+    fg[0] += a * CppAD::pow(vars[cte_start + t] - ref_cte, 2);
+    fg[0] += b * CppAD::pow(vars[epsi_start + t] - ref_espi, 2);
+    fg[0] += c * CppAD::pow(vars[v_start + t] - ref_v, 2);
+  }
+
+>  // Costs for steering (delta) and acceleration (a)
+  for (unsigned int t = 0; t < N-1; t++) {
+    fg[0] += d * CppAD::pow(vars[delta_start + t], 2);
+    fg[0] += e * CppAD::pow(vars[a_start + t], 2);
+  }
+
+>  // Costs related to the change in steering and acceleration (makes the ride smoother)
+  for (unsigned int t = 0; t < N-2; t++) {
+    fg[0] += f * pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
+    fg[0] += g * pow(vars[a_start + t + 1] - vars[a_start + t], 2);
+  }
+
+__a b c d e f g are numerical parameters for cost function. Now those values are manually set to determine best simulation performance.__
+
+For example, if we want to extremly minimize cost for CET psi, we intentionally set big number on a and b, c to penalize the error between the theoritical and real numerical data on the driving trajectory of the car. When we set 10000 for a and b, the simulation car slowly approaches each road corner and turn curves gently (=with slowest speed) so that car avoid any corrision and course out of the track road.  
+
+### 4. Timestep Length and Elapsed Duration (N & dt)
 
 
+We have done try and error to select an appropriate time values N and dt. Personally I started to select N values between 10 and 20 and for dt 0.05 and 0.1 respectively. As result of my experiemntal approach, N=10 and dt=0.1 was best combinaton to show best performance on the simlation car driving. Setting smaller than 0.1 for dt value, dt=0.05 and N = 20 showed not good outcome on the simulation. 
+
+### 5. Polynomial Fitting and MPC Preprocessing
+
+Based on the text book of UdaCity, it is said that the reference trajectory is typically passed to the control block as a polynomial. 
+As this proves, 3rd order polynominal third order polynomials will fit trajectories for most roads.
+For transforming global position to local x=0 y=0, we have used subtraction `ptsx - px`. 
+
+> // Need Eigen vectors for polyfit
+Eigen::VectorXd ptsx_car(ptsx.size());
+Eigen::VectorXd ptsy_car(ptsy.size());
+
+> // Transform method the points to the vehicle's orientation
+// convert Global position to local position
+for (unsigned int i = 0; i < ptsx.size(); i++) {
+  double x = ptsx[i] - px;
+  double y = ptsy[i] - py;
+  ptsx_car[i] = x * cos(-psi) - y * sin(-psi);
+  ptsy_car[i] = x * sin(-psi) + y * cos(-psi);
+}
+
+> // Fits a 3rd-order polynomial to the above x and y coordinates
+auto coeffs = polyfit(ptsx_car, ptsy_car, 3);
+
+__Also, the track waypoints is displayed in yellow in the simulation screen.__
+
+### 6. Model Predictive Control with Latency
+
+In a real world, as command execution has some time elapsed before the actual action is activated, so-called __Latemcy__ is overcomed in the controlled system. We set 100ms as realistic latency number so that we predict 100ms ahead to control future vehicle trajectory to be run automatically.
+
+>  // Predict state after latency
+  // x, y and psi are all zero after transformation above
+  double pred_px = 0.0 + v * dt; // 0 + v x dt
+  const double pred_py = 0.0; // = 0
+  double pred_psi = 0.0 + v * -delta / Lf * dt; // 
+  double pred_v = v + a * dt;
+  double pred_cte = cte + v * sin(epsi) * dt;
+  double pred_epsi = epsi + v * -delta / Lf * dt;
+
+__Then, predicted values are moved into state vector and then pass to cost function.__
+
+>  // Feed in the predicted state values
+  Eigen::VectorXd state(6);
+  state << pred_px, pred_py, pred_psi, pred_v, pred_cte, pred_epsi;
 
 
 

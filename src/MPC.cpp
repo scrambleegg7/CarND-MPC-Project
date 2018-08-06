@@ -57,8 +57,8 @@ class FG_eval {
 
     // Cost for CTE, psi error and velocity
     for (unsigned int t = 0; t < N; t++) {
-      fg[0] += 2000 * CppAD::pow(vars[cte_start + t] - ref_cte, 2);
-      fg[0] += 2000 * CppAD::pow(vars[epsi_start + t] - ref_espi, 2);
+      fg[0] += 10000 * CppAD::pow(vars[cte_start + t] - ref_cte, 2);
+      fg[0] += 10000 * CppAD::pow(vars[epsi_start + t] - ref_espi, 2);
       fg[0] += 1 * CppAD::pow(vars[v_start + t] - ref_v, 2);
     }
     
