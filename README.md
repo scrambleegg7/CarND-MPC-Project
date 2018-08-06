@@ -47,24 +47,26 @@ https://www.coin-or.org/CppAD/Doc/ipopt_solve_get_started.cpp.htm
 
 Below is our cost function to be minized.
 
->  // Cost for CTE, psi error and velocity
+```c++
+  // Cost for CTE, psi error and velocity
   for (unsigned int t = 0; t < N; t++) {
     fg[0] += a * CppAD::pow(vars[cte_start + t] - ref_cte, 2);
     fg[0] += b * CppAD::pow(vars[epsi_start + t] - ref_espi, 2);
     fg[0] += c * CppAD::pow(vars[v_start + t] - ref_v, 2);
   }
 
->  // Costs for steering (delta) and acceleration (a)
+  // Costs for steering (delta) and acceleration (a)
   for (unsigned int t = 0; t < N-1; t++) {
     fg[0] += d * CppAD::pow(vars[delta_start + t], 2);
     fg[0] += e * CppAD::pow(vars[a_start + t], 2);
   }
 
->  // Costs related to the change in steering and acceleration (makes the ride smoother)
+  // Costs related to the change in steering and acceleration (makes the ride smoother)
   for (unsigned int t = 0; t < N-2; t++) {
     fg[0] += f * pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
     fg[0] += g * pow(vars[a_start + t + 1] - vars[a_start + t], 2);
   }
+```
 
 __a b c d e f g are numerical parameters for cost function. Now those values are manually set to determine best simulation performance.__
 
@@ -81,11 +83,12 @@ Based on the text book of UdaCity, it is said that the reference trajectory is t
 As this proves, 3rd order polynominal third order polynomials will fit trajectories for most roads.
 For transforming global position to local x=0 y=0, we have used subtraction `ptsx - px`. 
 
-> // Need Eigen vectors for polyfit
+```c++
+// Need Eigen vectors for polyfit
 Eigen::VectorXd ptsx_car(ptsx.size());
 Eigen::VectorXd ptsy_car(ptsy.size());
 
-> // Transform method the points to the vehicle's orientation
+// Transform method the points to the vehicle's orientation
 // convert Global position to local position
 for (unsigned int i = 0; i < ptsx.size(); i++) {
   double x = ptsx[i] - px;
@@ -94,8 +97,9 @@ for (unsigned int i = 0; i < ptsx.size(); i++) {
   ptsy_car[i] = x * sin(-psi) + y * cos(-psi);
 }
 
-> // Fits a 3rd-order polynomial to the above x and y coordinates
+// Fits a 3rd-order polynomial to the above x and y coordinates
 auto coeffs = polyfit(ptsx_car, ptsy_car, 3);
+```
 
 __Also, the track waypoints is displayed in yellow in the simulation screen.__
 
@@ -103,7 +107,8 @@ __Also, the track waypoints is displayed in yellow in the simulation screen.__
 
 In a real world, as command execution has some time elapsed before the actual action is activated, so-called __Latemcy__ is overcomed in the controlled system. We set 100ms as realistic latency number so that we predict 100ms ahead to control future vehicle trajectory to be run automatically.
 
->  // Predict state after latency
+```c++
+  // Predict state after latency
   // x, y and psi are all zero after transformation above
   double pred_px = 0.0 + v * dt; // 0 + v x dt
   const double pred_py = 0.0; // = 0
@@ -112,13 +117,12 @@ In a real world, as command execution has some time elapsed before the actual ac
   double pred_cte = cte + v * sin(epsi) * dt;
   double pred_epsi = epsi + v * -delta / Lf * dt;
 
-__Then, predicted values are moved into state vector and then pass to cost function.__
+  // Then, predicted values are moved into state vector and then pass to cost function.__
 
->  // Feed in the predicted state values
+  // Feed in the predicted state values
   Eigen::VectorXd state(6);
   state << pred_px, pred_py, pred_psi, pred_v, pred_cte, pred_epsi;
-
-
+```
 
 ---
 
