@@ -8,13 +8,17 @@ Self-Driving Car Engineer Nanodegree Program
 [//]: # (Image References)
 
 [constrain]:./img/constraint.png "parameter"
+[cte2000]:./img/cte2000_predictGreen.png "parameter"
+[cte10000]:./img/cte10000_predictGreen.png "parameter"
+
 
 
 ## 1. What is MPC ?
 MPC stands for Model Predictive Control system which is one of advanced method controlling a series of proccess 
-while satisfying a set of constrains. It has been used in the plan control like chemical industory or Electric insdustory
-long time since the 1980s. 
-Thiugh it might be most popular control for some engineers, why MPC has be used for autonomous driving technology ?
+while satisfying a set of constrains. It has been used in the industrial plant control system like chemical industory
+ or Electric insdustory long time since the 1980s. 
+Though it might be most popular algorythm to control complex mechanial adjustments for some engineers, 
+why MPC has be popular used for autonomous driving technology ?
 Lets say about the story of the car driving at night scene (this example would fit to our next project aim), 
 our human has an ability predicting the road with tiny spot lights brinking at the pedestrian deck in the street. 
 In addition we are able to keep the car in the limited lane space
@@ -22,8 +26,7 @@ to avoid corrision accident with other cars running other sided roads.
 Its action and feedback is must item for self-driving car which needs autonomous control without any human interactions. 
 Our main focus thema in this course, MPC brings to our forefront solving predicions about fure trajectory based on the 
 control actions.
-With recent technology of having advanced capability of the computer, we are able to easily adopt this model for
-complex real-world simulations like car-engineering and aerospace etc. 
+With recent technology of having advanced capability of the computer in recent modern era, we are able to easily adopt this model for the real-world simulations like car-engineering and aerospace etc. 
 
 ## 2. Object
 Here the last project of Nano Degree Term2 course, utilizing mordernized technical control MPC mentioned in the above, 
@@ -71,6 +74,12 @@ Below is our cost function to be minized.
 __a b c d e f g are numerical parameters for cost function. Now those values are manually set to determine best simulation performance.__
 
 For example, if we want to extremly minimize cost for CET psi, we intentionally set big number on a and b, c to penalize the error between the theoritical and real numerical data on the driving trajectory of the car. When we set 10000 for a and b, the simulation car slowly approaches each road corner and turn curves gently (=with slowest speed) so that car avoid any corrision and course out of the track road.  
+
+  __1. If we set a = b = 10000, then car speed is down to 46mph and almost matches green and yellow line.__ 
+![alt text][cte10000]
+
+  __2. If we set a = b = 2000, then car approaches to next corner with faster speed than previous one, but predicted trajectory drawn with green line is not in line with yellow line.__ 
+![alt text][cte2000]
 
 ### 4. Timestep Length and Elapsed Duration (N & dt)
 
